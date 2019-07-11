@@ -1,5 +1,4 @@
 import React from 'react'
-import matchMedia from 'matchmediaquery'
 import hyphenate from 'hyphenate-style-name'
 import areObjectsEqual from 'shallow-equal/objects'
 import toQuery from './toQuery'
@@ -112,3 +111,60 @@ const useMediaQuery = (settings, device, onChange) => {
 }
 
 export default useMediaQuery
+
+'use strict';
+
+var staticMatch = require('css-mediaquery').match;
+var dynamicMatch = typeof window !== 'undefined' ? window.matchMedia : null;
+
+// our fake MediaQueryList
+function Mql(query, values, forceStatic){
+  var self = this;
+  if(dynamicMatch && !forceStatic){
+    var mql = dynamicMatch.call(window, query);
+    this.matches = mql.matches;
+    this.media = mql.media;
+    // TODO: is there a time it makes sense to remove this listener?
+    mql.addListener(update);
+  } else {
+    this.matches = staticMatch(query, values);
+    this.media = query;
+  }
+
+  this.addListener = addListener;
+  this.removeListener = removeListener;
+  this.dispose = dispose;
+  this.listeners = []
+
+  function addListener(listener){
+    this.listeners.push(listener)
+  }
+
+  function removeListener(listener){
+    for (let i = 0; i < self.listeners.length; i++) {
+      if (listener === self.listeners[i]) {
+        self.listeners.splice(i, 1)
+        break
+      }
+    }
+  }
+
+  // update ourselves!
+  function update(evt){
+    self.matches = evt.matches;
+    self.media = evt.media;
+    for (let i = 0; i < self.listeners.length; i++) {
+      self.listeners[i](evt)
+    }
+  }
+
+  function dispose(){
+    if(mql){
+      mql.removeListener(update);
+    }
+  }
+}
+
+function matchMedia(query, values, forceStatic){
+  return new Mql(query, values, forceStatic);
+}
