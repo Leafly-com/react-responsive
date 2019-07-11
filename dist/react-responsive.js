@@ -57,13 +57,41 @@
         function _arrayWithHoles(arr) {
             if (Array.isArray(arr)) return arr;
         }
-        var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1), __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__), __WEBPACK_IMPORTED_MODULE_1_matchmediaquery__ = __webpack_require__(7), __WEBPACK_IMPORTED_MODULE_1_matchmediaquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_matchmediaquery__), __WEBPACK_IMPORTED_MODULE_2_hyphenate_style_name__ = __webpack_require__(2), __WEBPACK_IMPORTED_MODULE_3_shallow_equal_objects__ = __webpack_require__(9), __WEBPACK_IMPORTED_MODULE_3_shallow_equal_objects___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_shallow_equal_objects__), __WEBPACK_IMPORTED_MODULE_4__toQuery__ = __webpack_require__(10), __WEBPACK_IMPORTED_MODULE_5__Context__ = __webpack_require__(5), makeQuery = function(settings) {
-            return settings.query || Object(__WEBPACK_IMPORTED_MODULE_4__toQuery__.a)(settings);
+        function Mql(query, values, forceStatic) {
+            function addListener(listener) {
+                this.listeners.push(listener);
+            }
+            function removeListener(listener) {
+                for (var i = 0; i < self.listeners.length; i++) if (listener === self.listeners[i]) {
+                    self.listeners.splice(i, 1);
+                    break;
+                }
+            }
+            function update(evt) {
+                self.matches = evt.matches, self.media = evt.media;
+                for (var i = 0; i < self.listeners.length; i++) self.listeners[i](evt);
+            }
+            function dispose() {
+                mql && mql.removeListener(update);
+            }
+            var self = this;
+            if (dynamicMatch && !forceStatic) {
+                var mql = dynamicMatch.call(window, query);
+                this.matches = mql.matches, this.media = mql.media, mql.addListener(update);
+            } else this.matches = staticMatch(query, values), this.media = query;
+            this.addListener = addListener, this.removeListener = removeListener, this.dispose = dispose, 
+            this.listeners = [];
+        }
+        function matchMedia(query, values, forceStatic) {
+            return new Mql(query, values, forceStatic);
+        }
+        var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1), __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__), __WEBPACK_IMPORTED_MODULE_1_hyphenate_style_name__ = __webpack_require__(2), __WEBPACK_IMPORTED_MODULE_2_shallow_equal_objects__ = __webpack_require__(7), __WEBPACK_IMPORTED_MODULE_2_shallow_equal_objects___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_shallow_equal_objects__), __WEBPACK_IMPORTED_MODULE_3__toQuery__ = __webpack_require__(8), __WEBPACK_IMPORTED_MODULE_4__Context__ = __webpack_require__(5), makeQuery = function(settings) {
+            return settings.query || Object(__WEBPACK_IMPORTED_MODULE_3__toQuery__.a)(settings);
         }, hyphenateKeys = function(obj) {
             if (!obj) return null;
             var keys = Object.keys(obj);
             return 0 === keys.length ? null : keys.reduce(function(result, key) {
-                return result[Object(__WEBPACK_IMPORTED_MODULE_2_hyphenate_style_name__.a)(key)] = obj[key], 
+                return result[Object(__WEBPACK_IMPORTED_MODULE_1_hyphenate_style_name__.a)(key)] = obj[key], 
                 result;
             }, {});
         }, useIsUpdate = function() {
@@ -72,12 +100,12 @@
                 ref.current = !0;
             }, []), ref.current;
         }, useDevice = function(deviceFromProps) {
-            var deviceFromContext = __WEBPACK_IMPORTED_MODULE_0_react___default.a.useContext(__WEBPACK_IMPORTED_MODULE_5__Context__.a), getDevice = function() {
+            var deviceFromContext = __WEBPACK_IMPORTED_MODULE_0_react___default.a.useContext(__WEBPACK_IMPORTED_MODULE_4__Context__.a), getDevice = function() {
                 return hyphenateKeys(deviceFromProps) || hyphenateKeys(deviceFromContext);
             }, _React$useState = __WEBPACK_IMPORTED_MODULE_0_react___default.a.useState(getDevice), _React$useState2 = _slicedToArray(_React$useState, 2), device = _React$useState2[0], setDevice = _React$useState2[1];
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.useEffect(function() {
                 var newDevice = getDevice();
-                __WEBPACK_IMPORTED_MODULE_3_shallow_equal_objects___default()(device, newDevice) || setDevice(newDevice);
+                __WEBPACK_IMPORTED_MODULE_2_shallow_equal_objects___default()(device, newDevice) || setDevice(newDevice);
             }, [ deviceFromProps, deviceFromContext ]), device;
         }, useQuery = function(settings) {
             var getQuery = function() {
@@ -89,7 +117,7 @@
             }, [ settings ]), query;
         }, useMatchMedia = function(query, device) {
             var getMatchMedia = function() {
-                return __WEBPACK_IMPORTED_MODULE_1_matchmediaquery___default()(query, device || {}, !!device);
+                return matchMedia(query, device || {}, !!device);
             }, _React$useState5 = __WEBPACK_IMPORTED_MODULE_0_react___default.a.useState(getMatchMedia), _React$useState6 = _slicedToArray(_React$useState5, 2), mq = _React$useState6[0], setMq = _React$useState6[1], isUpdate = useIsUpdate();
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.useEffect(function() {
                 return isUpdate && setMq(getMatchMedia()), function() {
@@ -115,6 +143,7 @@
             }, [ matches ]), matches;
         };
         __webpack_exports__.a = useMediaQuery;
+        var staticMatch = __webpack_require__(15).match, dynamicMatch = "undefined" != typeof window ? window.matchMedia : null;
     }, function(module, exports) {
         module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
     }, function(module, __webpack_exports__, __webpack_require__) {
@@ -131,7 +160,7 @@
         __webpack_exports__.a = hyphenateStyleName;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        module.exports = __webpack_require__(13);
+        module.exports = __webpack_require__(11);
     }, function(module, exports, __webpack_require__) {
         "use strict";
         module.exports = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
@@ -144,7 +173,7 @@
         Object.defineProperty(__webpack_exports__, "__esModule", {
             value: !0
         });
-        var __WEBPACK_IMPORTED_MODULE_0__useMediaQuery__ = __webpack_require__(0), __WEBPACK_IMPORTED_MODULE_1__Component__ = __webpack_require__(17), __WEBPACK_IMPORTED_MODULE_2__Context__ = __webpack_require__(5);
+        var __WEBPACK_IMPORTED_MODULE_0__useMediaQuery__ = __webpack_require__(0), __WEBPACK_IMPORTED_MODULE_1__Component__ = __webpack_require__(16), __WEBPACK_IMPORTED_MODULE_2__Context__ = __webpack_require__(5);
         __webpack_require__.d(__webpack_exports__, "default", function() {
             return __WEBPACK_IMPORTED_MODULE_1__Component__.a;
         }), __webpack_require__.d(__webpack_exports__, "useMediaQuery", function() {
@@ -152,145 +181,6 @@
         }), __webpack_require__.d(__webpack_exports__, "Context", function() {
             return __WEBPACK_IMPORTED_MODULE_2__Context__.a;
         });
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        function Mql(query, values, forceStatic) {
-            function addListener(listener) {
-                mql && mql.addListener(listener);
-            }
-            function removeListener(listener) {
-                mql && mql.removeListener(listener);
-            }
-            function update(evt) {
-                self.matches = evt.matches, self.media = evt.media;
-            }
-            function dispose() {
-                mql && mql.removeListener(update);
-            }
-            var self = this;
-            if (dynamicMatch && !forceStatic) {
-                var mql = dynamicMatch.call(window, query);
-                this.matches = mql.matches, this.media = mql.media, mql.addListener(update);
-            } else this.matches = staticMatch(query, values), this.media = query;
-            this.addListener = addListener, this.removeListener = removeListener, this.dispose = dispose;
-        }
-        function matchMedia(query, values, forceStatic) {
-            return new Mql(query, values, forceStatic);
-        }
-        var staticMatch = __webpack_require__(8).match, dynamicMatch = "undefined" != typeof window ? window.matchMedia : null;
-        module.exports = matchMedia;
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        function matchQuery(mediaQuery, values) {
-            return parseQuery(mediaQuery).some(function(query) {
-                var inverse = query.inverse, typeMatch = "all" === query.type || values.type === query.type;
-                if (typeMatch && inverse || !typeMatch && !inverse) return !1;
-                var expressionsMatch = query.expressions.every(function(expression) {
-                    var feature = expression.feature, modifier = expression.modifier, expValue = expression.value, value = values[feature];
-                    if (!value) return !1;
-                    switch (feature) {
-                      case "orientation":
-                      case "scan":
-                        return value.toLowerCase() === expValue.toLowerCase();
-
-                      case "width":
-                      case "height":
-                      case "device-width":
-                      case "device-height":
-                        expValue = toPx(expValue), value = toPx(value);
-                        break;
-
-                      case "resolution":
-                        expValue = toDpi(expValue), value = toDpi(value);
-                        break;
-
-                      case "aspect-ratio":
-                      case "device-aspect-ratio":
-                      case "device-pixel-ratio":
-                        expValue = toDecimal(expValue), value = toDecimal(value);
-                        break;
-
-                      case "grid":
-                      case "color":
-                      case "color-index":
-                      case "monochrome":
-                        expValue = parseInt(expValue, 10) || 1, value = parseInt(value, 10) || 0;
-                    }
-                    switch (modifier) {
-                      case "min":
-                        return value >= expValue;
-
-                      case "max":
-                        return value <= expValue;
-
-                      default:
-                        return value === expValue;
-                    }
-                });
-                return expressionsMatch && !inverse || !expressionsMatch && inverse;
-            });
-        }
-        function parseQuery(mediaQuery) {
-            return mediaQuery.split(",").map(function(query) {
-                query = query.trim();
-                var captures = query.match(RE_MEDIA_QUERY), modifier = captures[1], type = captures[2], expressions = captures[3] || "", parsed = {};
-                return parsed.inverse = !!modifier && "not" === modifier.toLowerCase(), parsed.type = type ? type.toLowerCase() : "all", 
-                expressions = expressions.match(/\([^\)]+\)/g) || [], parsed.expressions = expressions.map(function(expression) {
-                    var captures = expression.match(RE_MQ_EXPRESSION), feature = captures[1].toLowerCase().match(RE_MQ_FEATURE);
-                    return {
-                        modifier: feature[1],
-                        feature: feature[2],
-                        value: captures[2]
-                    };
-                }), parsed;
-            });
-        }
-        function toDecimal(ratio) {
-            var numbers, decimal = Number(ratio);
-            return decimal || (numbers = ratio.match(/^(\d+)\s*\/\s*(\d+)$/), decimal = numbers[1] / numbers[2]), 
-            decimal;
-        }
-        function toDpi(resolution) {
-            var value = parseFloat(resolution);
-            switch (String(resolution).match(RE_RESOLUTION_UNIT)[1]) {
-              case "dpcm":
-                return value / 2.54;
-
-              case "dppx":
-                return 96 * value;
-
-              default:
-                return value;
-            }
-        }
-        function toPx(length) {
-            var value = parseFloat(length);
-            switch (String(length).match(RE_LENGTH_UNIT)[1]) {
-              case "em":
-              case "rem":
-                return 16 * value;
-
-              case "cm":
-                return 96 * value / 2.54;
-
-              case "mm":
-                return 96 * value / 2.54 / 10;
-
-              case "in":
-                return 96 * value;
-
-              case "pt":
-                return 72 * value;
-
-              case "pc":
-                return 72 * value / 12;
-
-              default:
-                return value;
-            }
-        }
-        exports.match = matchQuery, exports.parse = parseQuery;
-        var RE_MEDIA_QUERY = /(?:(only|not)?\s*([^\s\(\)]+)(?:\s*and)?\s*)?(.+)?/i, RE_MQ_EXPRESSION = /\(\s*([^\s\:\)]+)\s*(?:\:\s*([^\s\)]+))?\s*\)/, RE_MQ_FEATURE = /^(?:(min|max)-)?(.+)/, RE_LENGTH_UNIT = /(em|rem|px|cm|mm|in|pt|pc)?$/, RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?$/;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         function shallowEqualObjects(objA, objB) {
@@ -307,7 +197,7 @@
         module.exports = shallowEqualObjects;
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var __WEBPACK_IMPORTED_MODULE_0_hyphenate_style_name__ = __webpack_require__(2), __WEBPACK_IMPORTED_MODULE_1__mediaQuery__ = __webpack_require__(11), negate = function(cond) {
+        var __WEBPACK_IMPORTED_MODULE_0_hyphenate_style_name__ = __webpack_require__(2), __WEBPACK_IMPORTED_MODULE_1__mediaQuery__ = __webpack_require__(9), negate = function(cond) {
             return "not ".concat(cond);
         }, keyVal = function(k, v) {
             var realKey = Object(__WEBPACK_IMPORTED_MODULE_0_hyphenate_style_name__.a)(k);
@@ -324,13 +214,20 @@
         };
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
+        function ownKeys(object, enumerableOnly) {
+            var keys = Object.keys(object);
+            return Object.getOwnPropertySymbols && keys.push.apply(keys, Object.getOwnPropertySymbols(object)), 
+            enumerableOnly && (keys = keys.filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            })), keys;
+        }
         function _objectSpread(target) {
             for (var i = 1; i < arguments.length; i++) {
-                var source = null != arguments[i] ? arguments[i] : {}, ownKeys = Object.keys(source);
-                "function" == typeof Object.getOwnPropertySymbols && (ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
-                    return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-                }))), ownKeys.forEach(function(key) {
+                var source = null != arguments[i] ? arguments[i] : {};
+                i % 2 ? ownKeys(source, !0).forEach(function(key) {
                     _defineProperty(target, key, source[key]);
+                }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(source).forEach(function(key) {
+                    Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
                 });
             }
             return target;
@@ -343,7 +240,7 @@
                 writable: !0
             }) : obj[key] = value, obj;
         }
-        var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(12), __WEBPACK_IMPORTED_MODULE_0_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_prop_types__), stringOrNumber = __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.oneOfType([ __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.string, __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.number ]), matchers = {
+        var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(10), __WEBPACK_IMPORTED_MODULE_0_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_prop_types__), stringOrNumber = __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.oneOfType([ __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.string, __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.number ]), matchers = {
             orientation: __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.oneOf([ "portrait", "landscape" ]),
             scan: __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.oneOf([ "progressive", "interlace" ]),
             aspectRatio: __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.string,
@@ -389,7 +286,7 @@
             tty: __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.bool,
             tv: __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.bool,
             embossed: __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.bool
-        }, all = _objectSpread({}, types, features);
+        }, all = _objectSpread({}, types, {}, features);
         matchers.type = Object.keys(types), __webpack_exports__.a = {
             all: all,
             types: types,
@@ -398,7 +295,7 @@
         };
     }, function(module, exports, __webpack_require__) {
         var ReactIs = __webpack_require__(3);
-        module.exports = __webpack_require__(14)(ReactIs.isElement, !0);
+        module.exports = __webpack_require__(12)(ReactIs.isElement, !0);
     }, function(module, exports, __webpack_require__) {
         "use strict";
         !function() {
@@ -518,7 +415,7 @@
         function emptyFunctionThatReturnsNull() {
             return null;
         }
-        var ReactIs = __webpack_require__(3), assign = __webpack_require__(15), ReactPropTypesSecret = __webpack_require__(4), checkPropTypes = __webpack_require__(16), has = Function.call.bind(Object.prototype.hasOwnProperty), printWarning = function() {};
+        var ReactIs = __webpack_require__(3), assign = __webpack_require__(13), ReactPropTypesSecret = __webpack_require__(4), checkPropTypes = __webpack_require__(14), has = Function.call.bind(Object.prototype.hasOwnProperty), printWarning = function() {};
         printWarning = function(text) {
             var message = "Warning: " + text;
             "undefined" != typeof console && console.error(message);
@@ -841,6 +738,118 @@ object-assign
         }, checkPropTypes.resetWarningCache = function() {
             loggedTypeFailures = {};
         }, module.exports = checkPropTypes;
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
+        function matchQuery(mediaQuery, values) {
+            return parseQuery(mediaQuery).some(function(query) {
+                var inverse = query.inverse, typeMatch = "all" === query.type || values.type === query.type;
+                if (typeMatch && inverse || !typeMatch && !inverse) return !1;
+                var expressionsMatch = query.expressions.every(function(expression) {
+                    var feature = expression.feature, modifier = expression.modifier, expValue = expression.value, value = values[feature];
+                    if (!value) return !1;
+                    switch (feature) {
+                      case "orientation":
+                      case "scan":
+                        return value.toLowerCase() === expValue.toLowerCase();
+
+                      case "width":
+                      case "height":
+                      case "device-width":
+                      case "device-height":
+                        expValue = toPx(expValue), value = toPx(value);
+                        break;
+
+                      case "resolution":
+                        expValue = toDpi(expValue), value = toDpi(value);
+                        break;
+
+                      case "aspect-ratio":
+                      case "device-aspect-ratio":
+                      case "device-pixel-ratio":
+                        expValue = toDecimal(expValue), value = toDecimal(value);
+                        break;
+
+                      case "grid":
+                      case "color":
+                      case "color-index":
+                      case "monochrome":
+                        expValue = parseInt(expValue, 10) || 1, value = parseInt(value, 10) || 0;
+                    }
+                    switch (modifier) {
+                      case "min":
+                        return value >= expValue;
+
+                      case "max":
+                        return value <= expValue;
+
+                      default:
+                        return value === expValue;
+                    }
+                });
+                return expressionsMatch && !inverse || !expressionsMatch && inverse;
+            });
+        }
+        function parseQuery(mediaQuery) {
+            return mediaQuery.split(",").map(function(query) {
+                query = query.trim();
+                var captures = query.match(RE_MEDIA_QUERY), modifier = captures[1], type = captures[2], expressions = captures[3] || "", parsed = {};
+                return parsed.inverse = !!modifier && "not" === modifier.toLowerCase(), parsed.type = type ? type.toLowerCase() : "all", 
+                expressions = expressions.match(/\([^\)]+\)/g) || [], parsed.expressions = expressions.map(function(expression) {
+                    var captures = expression.match(RE_MQ_EXPRESSION), feature = captures[1].toLowerCase().match(RE_MQ_FEATURE);
+                    return {
+                        modifier: feature[1],
+                        feature: feature[2],
+                        value: captures[2]
+                    };
+                }), parsed;
+            });
+        }
+        function toDecimal(ratio) {
+            var numbers, decimal = Number(ratio);
+            return decimal || (numbers = ratio.match(/^(\d+)\s*\/\s*(\d+)$/), decimal = numbers[1] / numbers[2]), 
+            decimal;
+        }
+        function toDpi(resolution) {
+            var value = parseFloat(resolution);
+            switch (String(resolution).match(RE_RESOLUTION_UNIT)[1]) {
+              case "dpcm":
+                return value / 2.54;
+
+              case "dppx":
+                return 96 * value;
+
+              default:
+                return value;
+            }
+        }
+        function toPx(length) {
+            var value = parseFloat(length);
+            switch (String(length).match(RE_LENGTH_UNIT)[1]) {
+              case "em":
+              case "rem":
+                return 16 * value;
+
+              case "cm":
+                return 96 * value / 2.54;
+
+              case "mm":
+                return 96 * value / 2.54 / 10;
+
+              case "in":
+                return 96 * value;
+
+              case "pt":
+                return 72 * value;
+
+              case "pc":
+                return 72 * value / 12;
+
+              default:
+                return value;
+            }
+        }
+        exports.match = matchQuery, exports.parse = parseQuery;
+        var RE_MEDIA_QUERY = /(?:(only|not)?\s*([^\s\(\)]+)(?:\s*and)?\s*)?(.+)?/i, RE_MQ_EXPRESSION = /\(\s*([^\s\:\)]+)\s*(?:\:\s*([^\s\)]+))?\s*\)/, RE_MQ_FEATURE = /^(?:(min|max)-)?(.+)/, RE_LENGTH_UNIT = /(em|rem|px|cm|mm|in|pt|pc)?$/, RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?$/;
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         function _objectWithoutProperties(source, excluded) {
